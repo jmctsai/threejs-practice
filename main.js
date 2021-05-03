@@ -1,24 +1,33 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
 
-const scene = new THREE.Scene();
+let scene, camera, renderer, cube;
 
-const fov = 60;
-const aspect = window.innerWidth / window.innerHeight;
-const near = 0.1;
-const far = 1000;
-const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+function init() {
+	scene = new THREE.Scene();
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+	const fov = 60;
+	const aspect = window.innerWidth / window.innerHeight;
+	const near = 0.1;
+	const far = 1000;
 
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+	camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 
-const geometry = new THREE.BoxGeometry(2, 2, 2);
-const material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+	renderer = new THREE.WebGLRenderer({
+		antialias: true,
+		alpha: true,
+	});
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	document.body.appendChild(renderer.domElement);
 
-camera.position.z = 5;
+	const geometry = new THREE.BoxGeometry(2, 2, 2);
+	// const material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+	const texture = new THREE.TextureLoader().load('textures/crate.gif');
+	const material = new THREE.MeshBasicMaterial({ map: texture });
+	cube = new THREE.Mesh(geometry, material);
+	scene.add(cube);
+
+	camera.position.z = 5;
+}
 
 function animate() {
 	requestAnimationFrame(animate);
@@ -29,4 +38,13 @@ function animate() {
 	renderer.render(scene, camera);
 }
 
+function onWindowResize() {
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+}
+//event listener to listen for resize browser
+window.addEventListener('resize', onWindowResize, false);
+
+init();
 animate();
